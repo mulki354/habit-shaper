@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContent';
 import { api } from '../lib/api';
+import { useToast } from '../context/ToastContext';
 import { HabitCard, type Habit } from '../components/HabitCard';
 import { HabitModal } from '../components/HabitModal';
 import { ConfirmDeleteModal } from '../components/ConfirmDeleteModal';
@@ -11,6 +12,7 @@ export const DashboardPage: React.FC = () => {
     const [habits, setHabits] = useState<Habit[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const { showToast } = useToast();
 
     // State untuk kontrol Modal CRUD & Aksi
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -27,6 +29,7 @@ export const DashboardPage: React.FC = () => {
         } catch (err: any) {
             console.error('Gagal mengambil data habit:', err);
             setError(err.message || 'Terjadi kesalahan saat memuat data kebiasaan.');
+            showToast('Tidak bisa terhubung ke server. Coba lagi nanti.', 'error');
         } finally {
             setLoading(false);
         }
@@ -43,10 +46,11 @@ export const DashboardPage: React.FC = () => {
                 setError(null);
                 // POST /habits/:id/complete (tanpa body, default hari ini di backend)
                 await api.post(`/habits/${habit.id}/complete`, {});
+                showToast(`Streak harian untuk "${habit.name}" berhasil tercatat! 🔥`, 'success');
                 fetchHabits();
             } catch (err: any) {
                 console.error('Gagal menandai selesai:', err);
-                setError(err.message || 'Terjadi kesalahan saat menandai kebiasaan selesai.');
+                showToast(err.message || 'Terjadi kesalahan saat menandai kebiasaan selesai.', 'error');
             }
         } else {
             // Tipe BREAK: Butuh konfirmasi lewat modal sebelum mencatat relapse
@@ -76,17 +80,29 @@ export const DashboardPage: React.FC = () => {
     // Handler eksekusi penghapusan dari modal konfirmasi
     const handleDeleteConfirm = async () => {
         if (!selectedHabit) return;
-        // Endpoint hapus: DELETE /habits/:id
-        await api.delete(`/habits/${selectedHabit.id}`);
-        fetchHabits();
+        try {
+            // Endpoint hapus: DELETE /habits/:id
+            await api.delete(`/habits/${selectedHabit.id}`);
+            showToast(`Habit "${selectedHabit.name}" berhasil dihapus.`, 'success');
+            fetchHabits();
+        } catch (err: any) {
+            console.error('Gagal menghapus habit:', err);
+            showToast(err.message || 'Gagal menghapus habit.', 'error');
+        }
     };
 
     // Handler eksekusi relapse dari modal konfirmasi
     const handleRelapseConfirm = async () => {
         if (!selectedHabit) return;
-        // Endpoint relapse: POST /habits/:id/relapse
-        await api.post(`/habits/${selectedHabit.id}/relapse`, {});
-        fetchHabits();
+        try {
+            // Endpoint relapse: POST /habits/:id/relapse
+            await api.post(`/habits/${selectedHabit.id}/relapse`, {});
+            showToast(`Streak bersih untuk "${selectedHabit.name}" telah di-reset ke Day 0.`, 'error');
+            fetchHabits();
+        } catch (err: any) {
+            console.error('Gagal mencatat relapse:', err);
+            showToast(err.message || 'Gagal mencatat relapse.', 'error');
+        }
     };
 
     return (

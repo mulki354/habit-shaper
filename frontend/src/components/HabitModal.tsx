@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../lib/api';
+import { useToast } from '../context/ToastContext';
 import type { Habit } from './HabitCard';
 
 interface HabitModalProps {
@@ -16,6 +17,7 @@ export const HabitModal: React.FC<HabitModalProps> = ({ isOpen, onClose, onSucce
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [validationError, setValidationError] = useState<string | null>(null);
+    const { showToast } = useToast();
 
     // Reset formulir saat modal dibuka atau beralih mode
     useEffect(() => {
@@ -55,15 +57,18 @@ export const HabitModal: React.FC<HabitModalProps> = ({ isOpen, onClose, onSucce
             if (isEditMode && habit) {
                 // Endpoint edit: PATCH /habits/:id
                 await api.patch(`/habits/${habit.id}`, { name: trimmedName });
+                showToast(`Nama kebiasaan berhasil diubah menjadi "${trimmedName}".`, 'success');
             } else {
                 // Endpoint tambah: POST /habits
                 await api.post('/habits', { name: trimmedName, type });
+                showToast(`Kebiasaan "${trimmedName}" berhasil ditambahkan! 🚀`, 'success');
             }
             onSuccess();
             onClose();
         } catch (err: any) {
             console.error('Gagal menyimpan habit:', err);
             setError(err.message || 'Terjadi kesalahan saat menyimpan data.');
+            showToast(err.message || 'Terjadi kesalahan saat menyimpan data.', 'error');
         } finally {
             setLoading(false);
         }
@@ -116,8 +121,8 @@ export const HabitModal: React.FC<HabitModalProps> = ({ isOpen, onClose, onSucce
                             }}
                             placeholder="Contoh: Meditasi Pagi, Bersepeda, dll."
                             className={`w-full px-4 py-3 bg-zinc-950 border text-sm text-zinc-100 rounded-xl focus:outline-none focus:ring-2 transition ${validationError
-                                    ? 'border-rose-500/50 focus:ring-rose-500/20'
-                                    : 'border-zinc-800 focus:border-emerald-500/50 focus:ring-emerald-500/20'
+                                ? 'border-rose-500/50 focus:ring-rose-500/20'
+                                : 'border-zinc-800 focus:border-emerald-500/50 focus:ring-emerald-500/20'
                                 }`}
                             disabled={loading}
                             autoFocus
@@ -147,8 +152,8 @@ export const HabitModal: React.FC<HabitModalProps> = ({ isOpen, onClose, onSucce
                                     type="button"
                                     onClick={() => setType('BUILD')}
                                     className={`p-3 border rounded-xl flex flex-col items-center gap-1 transition ${type === 'BUILD'
-                                            ? 'border-emerald-500/50 bg-emerald-500/5 text-emerald-400'
-                                            : 'border-zinc-800 bg-zinc-950 hover:bg-zinc-900 text-zinc-400'
+                                        ? 'border-emerald-500/50 bg-emerald-500/5 text-emerald-400'
+                                        : 'border-zinc-800 bg-zinc-950 hover:bg-zinc-900 text-zinc-400'
                                         }`}
                                 >
                                     <span className="text-sm font-bold">BUILD</span>
@@ -159,8 +164,8 @@ export const HabitModal: React.FC<HabitModalProps> = ({ isOpen, onClose, onSucce
                                     type="button"
                                     onClick={() => setType('BREAK')}
                                     className={`p-3 border rounded-xl flex flex-col items-center gap-1 transition ${type === 'BREAK'
-                                            ? 'border-rose-500/50 bg-rose-500/5 text-rose-400'
-                                            : 'border-zinc-800 bg-zinc-950 hover:bg-zinc-900 text-zinc-400'
+                                        ? 'border-rose-500/50 bg-rose-500/5 text-rose-400'
+                                        : 'border-zinc-800 bg-zinc-950 hover:bg-zinc-900 text-zinc-400'
                                         }`}
                                 >
                                     <span className="text-sm font-bold">BREAK</span>

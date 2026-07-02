@@ -135,7 +135,7 @@ export const HabitCard: React.FC<HabitCardProps> = ({
                 ) : habit.isActionDoneToday ? (
                     <div className="flex items-center gap-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-lg">
                         <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
-                        <span>Relapse Hari Ini — Streak Reset</span>
+                        <span>Relapse Hari Ini: Streak Reset</span>
                     </div>
                 ) : (
                     <div className="flex items-center gap-1.5 text-xs font-medium text-zinc-400">
@@ -151,13 +151,13 @@ export const HabitCard: React.FC<HabitCardProps> = ({
                     disabled={habit.isActionDoneToday}
                     onClick={() => onActionClick?.(habit)}
                     className={`w-full py-2.5 px-4 font-semibold text-sm rounded-xl transition duration-200 ${habit.isActionDoneToday
-                            ? isBuild
-                                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 pointer-events-none cursor-default'
-                                : 'bg-rose-500/10 text-rose-400 border border-rose-500/20 pointer-events-none cursor-default'
-                            : `active:scale-[0.98] active:translate-y-[0.5px] ${isBuild
-                                ? 'bg-emerald-600 hover:bg-emerald-500 text-zinc-50 hover:shadow-lg hover:shadow-emerald-950/20'
-                                : 'bg-zinc-800 hover:bg-zinc-700/80 text-rose-400 border border-zinc-700/50 hover:border-rose-500/30'
-                            }`
+                        ? isBuild
+                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 pointer-events-none cursor-default'
+                            : 'bg-rose-500/10 text-rose-400 border border-rose-500/20 pointer-events-none cursor-default'
+                        : `active:scale-[0.98] active:translate-y-[0.5px] ${isBuild
+                            ? 'bg-emerald-600 hover:bg-emerald-500 text-zinc-50 hover:shadow-lg hover:shadow-emerald-950/20'
+                            : 'bg-zinc-800 hover:bg-zinc-700/80 text-rose-400 border border-zinc-700/50 hover:border-rose-500/30'
+                        }`
                         }`}
                 >
                     {habit.isActionDoneToday
