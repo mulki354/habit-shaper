@@ -144,7 +144,7 @@ model HabitEntry {
 * `GET /auth/me` | Header: `Authorization: Bearer <token>` | Return: `{ id, email }`
 
 ### B. Habits (semua protected, scoped ke user dari token)
-* `GET /habits` | Return: list habit + stats terkomputasi (`currentStreak`, dan `weeklyCompletionRate` untuk BUILD atau `cleanStreak` untuk BREAK)
+* `GET /habits` | Return: list habit + stats terkomputasi (`currentStreak`, `isActionDoneToday`, dan `weeklyCompletionRate` untuk BUILD atau `cleanStreak` untuk BREAK)
 * `POST /habits` | Body: `{ name, type: "BUILD" \| "BREAK" }` | Return: habit baru
 * `PATCH /habits/:id` | Body: `{ name }` | Return: habit terupdate (tipe tidak bisa diubah lewat endpoint ini)
 * `DELETE /habits/:id` | Return: 204

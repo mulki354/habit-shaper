@@ -27,6 +27,7 @@ Mengacu ke `docs/PRD_HabitShaper.md` dan `docs/designs/design-guidelines.md`. Di
 
 ### Task 2.5: Aksi Harian & Tactile Feedback
 - **Arahan:** Tombol aksi harian: "Mark Done Today" (BUILD) dan "I Relapsed" (BREAK, dengan konfirmasi modal transisi).
+  - Tambahkan properti `isActionDoneToday: boolean` pada response `GET /habits` di backend untuk efisiensi deteksi status harian.
   - Terapkan efek *tactile feedback* pada tombol-tombol interaktif (`active:scale-[0.98]` atau `active:translate-y-[0.5px]`).
   - Refresh data streak dan statistik secara dinamis setelah aksi berhasil.
 - **Testing:** Klik mark done → streak bertambah. Klik relapse → konfirmasi modal muncul → setelah ok, streak ter-reset dengan indikasi visual transisi yang jelas.
