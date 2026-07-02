@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-sans: 'Outfit', system-ui, -apple-system, sans-serif;
+
+    /* Shape consistency lock (Border Radius) */
+    --radius-card: 1rem;
+    /* rounded-2xl */
+    --radius-button: 0.5rem;
+    /* rounded-lg */
+    --radius-input: 0.5rem;
+    /* rounded-lg */
+  }
+
+  body {
+    font-family: var(--font-sans);
+    @apply bg-zinc-950 text-zinc-100 min-h-[100dvh] antialiased;
+  }
+}
+
+/* Custom Utility Locks */
+.card-radius {
+  border-radius: var(--radius-card);
+}
+
+.btn-radius {
+  border-radius: var(--radius-button);
+}
+
+.input-radius {
+  border-radius: var(--radius-input);
+}
