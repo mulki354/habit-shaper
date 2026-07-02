@@ -1,33 +1,45 @@
 # Rencana Implementasi: Frontend (React + Tailwind)
 
-Mengacu ke `docs/PRD_HabitShaper.md`. Dikerjakan setelah endpoint backend terkait sudah ada (boleh paralel dengan mock data di awal).
+Mengacu ke `docs/PRD_HabitShaper.md` dan `docs/designs/design-guidelines.md`. Dikerjakan setelah endpoint backend terkait sudah ada.
 
-### Task 2.1: Inisialisasi Proyek + Tailwind Setup
-- **Arahan:** `npm create vite@latest frontend -- --template react-ts`, install & konfigurasi Tailwind CSS. Setup struktur folder dasar (`src/pages`, `src/components`, `src/lib/api.ts`).
-- **Testing:** `docker compose up` (service frontend) menampilkan halaman default Vite dengan Tailwind aktif (coba 1 class utility, pastikan ke-styling).
+### Task 2.1: Inisialisasi Proyek + Tailwind & Theme Setup
+- **Arahan:** `npm create vite@latest frontend -- --template react-ts`, install & konfigurasi Tailwind CSS.
+  - Setup font premium (seperti Geist, Satoshi, atau Outfit) dan hindari Inter standar.
+  - Konfigurasi variabel tema (neutral bases: Zinc/Slate, accents: Emerald & Rose).
+  - Terapkan *shape consistency lock* pada config Tailwind (misal: radius rounded-xl/2xl untuk cards, rounded-lg untuk inputs/buttons).
+  - Susun struktur folder dasar (`src/pages`, `src/components`, `src/lib/api.ts`).
+- **Testing:** `docker compose up` (service frontend) menampilkan halaman default dengan konfigurasi font dan CSS variabel kustom berjalan baik.
 
-### Task 2.2: Routing + Halaman Login/Register
-- **Arahan:** Setup `react-router-dom`. Halaman `/login` dan `/register`, form terhubung ke `POST /auth/login` dan `POST /auth/register`. Simpan `accessToken` (state React + persist ke `localStorage` untuk survive refresh).
-- **Testing:** Register user baru dari UI → otomatis login → redirect ke dashboard. Refresh halaman, sesi tetap ada (token masih valid).
+### Task 2.2: Routing + Halaman Auth (Login/Register)
+- **Arahan:** Setup `react-router-dom`. Halaman `/login` dan `/register` dibuat dengan desain minimalis, form kontras (memenuhi WCAG AA), helper text inline, tanpa label placeholder (label selalu di atas input). Simpan `accessToken` ke state & `localStorage`.
+- **Testing:** Register user baru dari UI → otomatis login → redirect ke dashboard. Refresh halaman, sesi tetap bertahan.
 
-### Task 2.3: Dashboard — List Habit
-- **Arahan:** Halaman `/dashboard` fetch `GET /habits`, render card per habit (nama, tipe, streak/completion rate). Bedakan visual BUILD vs BREAK (warna aksen sesuai PRD bagian 5).
-- **Testing:** Habit yang dibuat lewat backend (atau lewat UI) tampil dengan data streak yang benar.
+### Task 2.3: Dashboard — List Habit & Bento Layout
+- **Arahan:** Halaman `/dashboard` fetch `GET /habits`, render card per habit menggunakan bento-style layout atau grid asimetris yang rapi dengan `VISUAL_DENSITY: 4`.
+  - Bedakan aksen BUILD (Emerald) vs BREAK (Rose) secara konsisten.
+  - Gunakan `min-h-[100dvh]` untuk kestabilan viewport.
+  - Tampilkan ringkasan statistik (streak, weekly completion rate) dengan font display yang besar dan berjarak lega.
+- **Testing:** Habit yang dibuat tampil di layout grid/bento dengan status streak yang benar.
 
-### Task 2.4: Add / Edit / Delete Goal
-- **Arahan:** Modal/form tambah goal (nama + pilih tipe BUILD/BREAK), aksi edit nama, aksi hapus dengan konfirmasi.
-- **Testing:** CRUD lengkap dari UI, list ter-update tanpa perlu refresh manual (refetch atau optimistic update).
+### Task 2.4: Add / Edit / Delete Goal (Modal & Dialog)
+- **Arahan:** Modal tambah goal (nama + tipe BUILD/BREAK) dan edit nama dengan efek transisi halus. Tombol CTA utama tidak boleh terlipat tulisannya (*CTA Button Wrap Ban*), dan pastikan tidak ada maksud tombol ganda (*No Duplicate CTA Intent*).
+- **Testing:** Operasi CRUD lengkap dari UI berjalan lancar, daftar habit langsung ter-update secara reaktif.
 
-### Task 2.5: Aksi Harian — Mark Done / Mark Relapse
-- **Arahan:** Tombol di tiap card: "Mark Done Today" (BUILD, disabled kalau hari ini sudah ditandai) dan "I Relapsed" (BREAK, dengan konfirmasi karena mereset streak). Panggil endpoint terkait, refresh angka streak setelah aksi.
-- **Testing:** Klik mark done → streak & weekly rate berubah sesuai formula PRD. Klik relapse → streak reset ke 0/Day 1, ada state UI yang jelas menunjukkan reset terjadi (bukan cuma angka berubah diam-diam).
+### Task 2.5: Aksi Harian & Tactile Feedback
+- **Arahan:** Tombol aksi harian: "Mark Done Today" (BUILD) dan "I Relapsed" (BREAK, dengan konfirmasi modal transisi).
+  - Terapkan efek *tactile feedback* pada tombol-tombol interaktif (`active:scale-[0.98]` atau `active:translate-y-[0.5px]`).
+  - Refresh data streak dan statistik secara dinamis setelah aksi berhasil.
+- **Testing:** Klik mark done → streak bertambah. Klik relapse → konfirmasi modal muncul → setelah ok, streak ter-reset dengan indikasi visual transisi yang jelas.
 
-### Task 2.6: Polish — Error State, Loading State, Empty State
-- **Arahan:** Tampilkan loading spinner saat fetch, pesan error kalau API gagal (misal salah password), empty state kalau user belum punya habit sama sekali ("Belum ada habit, yuk tambah yang pertama").
-- **Testing:** Matikan backend sebentar → UI menampilkan error, bukan blank page/crash.
+### Task 2.6: Premium Polish & Pre-Flight Check
+- **Arahan:** Implementasi state pelengkap berkualitas premium:
+  - **Loading:** Skeleton loaders presisi (mengikuti bentuk card asli), bukan spinner putar biasa.
+  - **Empty State:** Desain dashboard kosong yang ramah dengan ilustrasi/monogram SVG terintegrasi dan CTA yang menonjol.
+  - **Error State:** Pesan kesalahan manusiawi (inline/toast).
+  - Jalankan verifikasi *Pre-Flight Check* (tidak ada em-dash `—`, kontras tombol memadai, dll).
+- **Testing:** Matikan backend → UI menampilkan fallback error yang anggun. Simulasi loading lambat menunjukkan skeleton ter-render pas.
 
 <!--
-  Task lanjutan (misal grafik histori, dark mode) hanya ditambahkan
-  jika waktu 3 hari masih tersisa setelah semua core feature selesai
-  dan sudah lulus acceptance criteria di PRD.
+  Task lanjutan (seperti grafik histori mingguan) hanya ditambahkan
+  jika waktu masih tersisa setelah core feature selesai dan lulus verifikasi.
 -->

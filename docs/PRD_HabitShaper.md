@@ -154,11 +154,23 @@ model HabitEntry {
 
 ---
 
-## 5. UI/UX Notes
+## 5. UI/UX Notes & Design Taste
 
-* Tema simpel: satu warna aksen (misal hijau tosca untuk build, merah lembut untuk break), Tailwind default palette cukup, tidak perlu desain custom rumit — sesuai spek "keep the theme and design simple and clean".
-* Halaman: `Login`/`Register`, `Dashboard` (list semua habit dengan badge streak), modal `Add/Edit Goal`, tombol aksi cepat "Mark Done Today" (build) / "I Relapsed" (break) langsung di card masing-masing habit.
-* Tidak perlu dark mode atau responsif kompleks untuk versi ini — cukup layak dipakai di desktop & mobile width standar.
+Seluruh antarmuka pengguna wajib mengikuti panduan di [design-guidelines.md](file:///d:/Asbud%20Jaya%20Tech/habit-shaper/docs/designs/design-guidelines.md) untuk menjaga kualitas visual premium dan menghindari pola desain template/cliché (anti-slop).
+
+* **Tema & Konsistensi Warna:** Menggunakan basis warna netral (seperti *Zinc* atau *Slate*) yang konsisten di semua halaman. Warna aksen dikunci:
+  * **BUILD Habit:** Emerald / Teal (`text-emerald-500` / `bg-emerald-500`) untuk melambangkan pertumbuhan/keberhasilan.
+  * **BREAK Habit:** Rose / Brick Red (`text-rose-500` / `bg-rose-500`) untuk melambangkan pantangan/relapse.
+* **Layout & Struktur:**
+  * Halaman mencakup: `Login`/`Register` yang bersih dan minimalis, serta `Dashboard` (daftar habit dengan visualisasi streak dan progress mingguan).
+  * Menggunakan bento-style layout atau clean grid asimetris untuk menampilkan statistik kebiasaan agar data memiliki ruang bernapas (*visual density* optimal).
+  * Aksi harian cepat disediakan langsung pada card masing-masing habit: "Mark Done Today" (BUILD) dan "I Relapsed" (BREAK, dengan modal konfirmasi agar tidak sengaja terpencet).
+* **Dark Mode & Responsivitas:**
+  * Mendukung visualisasi yang konsisten dalam satu tema (Light/Dark) secara menyeluruh. Tata letak harus responsif dan stabil di browser mobile menggunakan `min-h-[100dvh]` untuk mengantisipasi address bar di iOS.
+* **Kelengkapan State:**
+  * Wajib mengimplementasikan loading state menggunakan skeleton loaders yang presisi, empty state yang ramah dan memiliki tombol ajakan bertindak (CTA) yang jelas, serta inline error handling pada form login/register dan tambah goal.
+* **Standard Larangan:**
+  * Tidak menggunakan em-dash (`—`), tidak ada teks CTA yang terlipat menjadi 2 baris pada desktop, dan menerapkan *shape consistency lock* (border-radius yang konsisten di seluruh elemen).
 
 ---
 
