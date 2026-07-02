@@ -3,6 +3,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { HabitsService } from './habits.service';
 import { CreateHabitDto } from './dto/create-habit.dto';
 import { UpdateHabitDto } from './dto/update-habit.dto';
+import { EntryDto } from './dto/entry.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('habits')
@@ -36,5 +37,36 @@ export class HabitsController {
     async remove(@Req() req: any, @Param('id', ParseIntPipe) id: number) {
         const userId = req.user.id;
         await this.habitsService.remove(userId, id);
+    }
+
+    // --- ENDPOINT UNTUK TRACKING LOGIC ---
+
+    @Post(':id/complete')
+    async markComplete(
+        @Req() req: any,
+        @Param('id', ParseIntPipe) id: number,
+        @Body() dto: EntryDto,
+    ) {
+        const userId = req.user.id;
+        return this.habitsService.markComplete(userId, id, dto);
+    }
+
+    @Post(':id/relapse')
+    async markRelapse(
+        @Req() req: any,
+        @Param('id', ParseIntPipe) id: number,
+        @Body() dto: EntryDto,
+    ) {
+        const userId = req.user.id;
+        return this.habitsService.markRelapse(userId, id, dto);
+    }
+
+    @Get(':id/stats')
+    async getStats(
+        @Req() req: any,
+        @Param('id', ParseIntPipe) id: number,
+    ) {
+        const userId = req.user.id;
+        return this.habitsService.getStats(userId, id);
     }
 }
