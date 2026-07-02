@@ -4,6 +4,7 @@ import { api } from '../lib/api';
 import { HabitCard, type Habit } from '../components/HabitCard';
 import { HabitModal } from '../components/HabitModal';
 import { ConfirmDeleteModal } from '../components/ConfirmDeleteModal';
+import { ConfirmRelapseModal } from '../components/ConfirmRelapseModal';
 
 export const DashboardPage: React.FC = () => {
     const { user, logout } = useAuth();
@@ -11,9 +12,10 @@ export const DashboardPage: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    // State untuk kontrol Modal CRUD
+    // State untuk kontrol Modal CRUD & Aksi
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
+    const [isRelapseOpen, setIsRelapseOpen] = useState<boolean>(false);
     const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
 
     const fetchHabits = async () => {
@@ -34,9 +36,23 @@ export const DashboardPage: React.FC = () => {
         fetchHabits();
     }, []);
 
-    // Placeholder handler untuk aksi cepat harian (fungsionalitas penuh di Task 2.5)
-    const handleActionClick = (habit: Habit) => {
-        alert(`Aksi cepat harian untuk "${habit.name}" terpilih! Fungsionalitas aksi harian akan aktif pada Task 2.5.`);
+    // Handler untuk aksi cepat harian
+    const handleActionClick = async (habit: Habit) => {
+        if (habit.type === 'BUILD') {
+            try {
+                setError(null);
+                // POST /habits/:id/complete (tanpa body, default hari ini di backend)
+                await api.post(`/habits/${habit.id}/complete`, {});
+                fetchHabits();
+            } catch (err: any) {
+                console.error('Gagal menandai selesai:', err);
+                setError(err.message || 'Terjadi kesalahan saat menandai kebiasaan selesai.');
+            }
+        } else {
+            // Tipe BREAK: Butuh konfirmasi lewat modal sebelum mencatat relapse
+            setSelectedHabit(habit);
+            setIsRelapseOpen(true);
+        }
     };
 
     // Handler untuk membuka modal tambah habit baru
@@ -62,6 +78,14 @@ export const DashboardPage: React.FC = () => {
         if (!selectedHabit) return;
         // Endpoint hapus: DELETE /habits/:id
         await api.delete(`/habits/${selectedHabit.id}`);
+        fetchHabits();
+    };
+
+    // Handler eksekusi relapse dari modal konfirmasi
+    const handleRelapseConfirm = async () => {
+        if (!selectedHabit) return;
+        // Endpoint relapse: POST /habits/:id/relapse
+        await api.post(`/habits/${selectedHabit.id}/relapse`, {});
         fetchHabits();
     };
 
@@ -182,6 +206,14 @@ export const DashboardPage: React.FC = () => {
                 isOpen={isDeleteOpen}
                 onClose={() => setIsDeleteOpen(false)}
                 onConfirm={handleDeleteConfirm}
+                habitName={selectedHabit?.name || ''}
+            />
+
+            {/* Modal Konfirmasi Relapse */}
+            <ConfirmRelapseModal
+                isOpen={isRelapseOpen}
+                onClose={() => setIsRelapseOpen(false)}
+                onConfirm={handleRelapseConfirm}
                 habitName={selectedHabit?.name || ''}
             />
         </div>

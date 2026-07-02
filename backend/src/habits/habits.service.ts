@@ -210,11 +210,9 @@ export class HabitsService {
                     .filter((e: any) => e.kind === 'COMPLETED')
                     .map((e: any) => e.date.toISOString().substring(0, 10))
             );
-
             let streak = 0;
             const todayStr = getLocalDateString(new Date());
             const yesterdayStr = getOffsetDateString(todayStr, -1);
-
             let currentStr = todayStr;
             if (completedDates.has(todayStr)) {
                 while (completedDates.has(currentStr)) {
@@ -228,7 +226,6 @@ export class HabitsService {
                     currentStr = getOffsetDateString(currentStr, -1);
                 }
             }
-
             // Weekly completion rate
             const last7Days: string[] = [];
             for (let i = 0; i < 7; i++) {
@@ -241,17 +238,16 @@ export class HabitsService {
                 }
             }
             const weeklyCompletionRate = parseFloat((completedCount / 7).toFixed(2));
-
             return {
                 currentStreak: streak,
                 weeklyCompletionRate,
+                isActionDoneToday: completedDates.has(todayStr),
             };
         } else {
             // BREAK
             const relapseDates = entries
                 .filter((e: any) => e.kind === 'RELAPSED')
                 .map((e: any) => e.date.toISOString().substring(0, 10));
-
             let baseDateStr = habit.createdAt.toISOString().substring(0, 10);
             if (relapseDates.length > 0) {
                 relapseDates.sort((a: string, b: string) => b.localeCompare(a));
@@ -260,13 +256,12 @@ export class HabitsService {
                     baseDateStr = latestRelapse;
                 }
             }
-
             const todayStr = getLocalDateString(new Date());
             const diffTime = new Date(todayStr).getTime() - new Date(baseDateStr).getTime();
             const cleanStreak = Math.max(0, Math.floor(diffTime / (24 * 60 * 60 * 1000)));
-
             return {
                 cleanStreak,
+                isActionDoneToday: relapseDates.includes(todayStr),
             };
         }
     }

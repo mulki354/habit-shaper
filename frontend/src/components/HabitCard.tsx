@@ -10,6 +10,7 @@ export interface Habit {
     currentStreak?: number; // Hanya untuk BUILD
     weeklyCompletionRate?: number; // Hanya untuk BUILD (desimal 0 - 1)
     cleanStreak?: number; // Hanya untuk BREAK
+    isActionDoneToday?: boolean; // Menunjukkan status pencatatan hari ini
 }
 
 interface HabitCardProps {
@@ -131,6 +132,11 @@ export const HabitCard: React.FC<HabitCardProps> = ({
                             />
                         </div>
                     </div>
+                ) : habit.isActionDoneToday ? (
+                    <div className="flex items-center gap-1.5 text-xs font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2.5 py-1 rounded-lg">
+                        <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                        <span>Relapse Hari Ini — Streak Reset</span>
+                    </div>
                 ) : (
                     <div className="flex items-center gap-1.5 text-xs font-medium text-zinc-400">
                         <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping" />
@@ -142,13 +148,26 @@ export const HabitCard: React.FC<HabitCardProps> = ({
             {/* Bagian Bawah: Aksi Cepat (Tactile Button) */}
             <div className="pt-4 border-t border-zinc-800/60">
                 <button
+                    disabled={habit.isActionDoneToday}
                     onClick={() => onActionClick?.(habit)}
-                    className={`w-full py-2.5 px-4 font-semibold text-sm rounded-xl transition duration-200 active:scale-[0.98] ${isBuild
-                        ? 'bg-emerald-600 hover:bg-emerald-500 text-zinc-50 hover:shadow-lg hover:shadow-emerald-950/20'
-                        : 'bg-zinc-800 hover:bg-zinc-700/80 text-rose-400 border border-zinc-700/50 hover:border-rose-500/30'
+                    className={`w-full py-2.5 px-4 font-semibold text-sm rounded-xl transition duration-200 ${habit.isActionDoneToday
+                            ? isBuild
+                                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 pointer-events-none cursor-default'
+                                : 'bg-rose-500/10 text-rose-400 border border-rose-500/20 pointer-events-none cursor-default'
+                            : `active:scale-[0.98] active:translate-y-[0.5px] ${isBuild
+                                ? 'bg-emerald-600 hover:bg-emerald-500 text-zinc-50 hover:shadow-lg hover:shadow-emerald-950/20'
+                                : 'bg-zinc-800 hover:bg-zinc-700/80 text-rose-400 border border-zinc-700/50 hover:border-rose-500/30'
+                            }`
                         }`}
                 >
-                    {isBuild ? 'Tandai Selesai Hari Ini' : 'Saya Relapse Hari Ini'}
+                    {habit.isActionDoneToday
+                        ? isBuild
+                            ? '✓ Selesai Hari Ini'
+                            : '⚠️ Relapse Hari Ini'
+                        : isBuild
+                            ? 'Tandai Selesai Hari Ini'
+                            : 'Saya Relapse Hari Ini'
+                    }
                 </button>
             </div>
         </div>
