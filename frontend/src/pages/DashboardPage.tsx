@@ -2,12 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContent';
 import { api } from '../lib/api';
 import { HabitCard, type Habit } from '../components/HabitCard';
+import { HabitModal } from '../components/HabitModal';
+import { ConfirmDeleteModal } from '../components/ConfirmDeleteModal';
 
 export const DashboardPage: React.FC = () => {
     const { user, logout } = useAuth();
     const [habits, setHabits] = useState<Habit[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+
+    // State untuk kontrol Modal CRUD
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
+    const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
 
     const fetchHabits = async () => {
         try {
@@ -32,6 +39,32 @@ export const DashboardPage: React.FC = () => {
         alert(`Aksi cepat harian untuk "${habit.name}" terpilih! Fungsionalitas aksi harian akan aktif pada Task 2.5.`);
     };
 
+    // Handler untuk membuka modal tambah habit baru
+    const handleAddClick = () => {
+        setSelectedHabit(null);
+        setIsModalOpen(true);
+    };
+
+    // Handler untuk membuka modal ubah habit
+    const handleEditClick = (habit: Habit) => {
+        setSelectedHabit(habit);
+        setIsModalOpen(true);
+    };
+
+    // Handler untuk membuka modal konfirmasi hapus
+    const handleDeleteClick = (habit: Habit) => {
+        setSelectedHabit(habit);
+        setIsDeleteOpen(true);
+    };
+
+    // Handler eksekusi penghapusan dari modal konfirmasi
+    const handleDeleteConfirm = async () => {
+        if (!selectedHabit) return;
+        // Endpoint hapus: DELETE /habits/:id
+        await api.delete(`/habits/${selectedHabit.id}`);
+        fetchHabits();
+    };
+
     return (
         <div className="min-h-[100dvh] bg-zinc-950 text-zinc-100 px-4 py-8 md:px-8">
             <div className="max-w-6xl mx-auto space-y-8">
@@ -47,7 +80,7 @@ export const DashboardPage: React.FC = () => {
 
                     <div className="flex items-center gap-3 w-full md:w-auto">
                         <button
-                            onClick={() => alert('Fitur tambah habit akan diaktifkan pada Task 2.4')}
+                            onClick={handleAddClick}
                             className="flex-1 md:flex-none px-4 py-2 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-zinc-50 font-bold rounded-xl text-sm transition duration-150 shadow-lg shadow-emerald-950/20"
                         >
                             + Tambah Habit Baru
@@ -113,7 +146,7 @@ export const DashboardPage: React.FC = () => {
                                 </p>
                             </div>
                             <button
-                                onClick={() => alert('Fitur tambah habit akan diaktifkan pada Task 2.4')}
+                                onClick={handleAddClick}
                                 className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-zinc-50 font-bold rounded-xl text-sm transition duration-150 shadow-lg shadow-emerald-950/20"
                             >
                                 + Mulai Sekarang
@@ -127,12 +160,30 @@ export const DashboardPage: React.FC = () => {
                                     key={habit.id}
                                     habit={habit}
                                     onActionClick={handleActionClick}
+                                    onEditClick={handleEditClick}
+                                    onDeleteClick={handleDeleteClick}
                                 />
                             ))}
                         </div>
                     )}
                 </main>
             </div>
+
+            {/* Modal Form: Tambah / Edit Habit */}
+            <HabitModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSuccess={fetchHabits}
+                habit={selectedHabit}
+            />
+
+            {/* Modal Konfirmasi Hapus */}
+            <ConfirmDeleteModal
+                isOpen={isDeleteOpen}
+                onClose={() => setIsDeleteOpen(false)}
+                onConfirm={handleDeleteConfirm}
+                habitName={selectedHabit?.name || ''}
+            />
         </div>
     );
 };

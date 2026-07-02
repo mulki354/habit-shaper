@@ -15,9 +15,16 @@ export interface Habit {
 interface HabitCardProps {
     habit: Habit;
     onActionClick?: (habit: Habit) => void;
+    onEditClick?: (habit: Habit) => void;
+    onDeleteClick?: (habit: Habit) => void;
 }
 
-export const HabitCard: React.FC<HabitCardProps> = ({ habit, onActionClick }) => {
+export const HabitCard: React.FC<HabitCardProps> = ({
+    habit,
+    onActionClick,
+    onEditClick,
+    onDeleteClick
+}) => {
     const isBuild = habit.type === 'BUILD';
 
     // Konversi weeklyCompletionRate desimal (misal 0.43) ke jumlah hari (misal 3 dari 7 hari)
@@ -27,26 +34,55 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit, onActionClick }) =>
 
     return (
         <div className={`relative flex flex-col justify-between p-6 bg-zinc-900 border rounded-2xl shadow-lg transition duration-300 group hover:-translate-y-1 ${isBuild
-                ? 'border-zinc-800/80 hover:border-emerald-500/30'
-                : 'border-zinc-800/80 hover:border-rose-500/30'
+            ? 'border-zinc-800/80 hover:border-emerald-500/30'
+            : 'border-zinc-800/80 hover:border-rose-500/30'
             }`}>
-            {/* Bagian Atas: Badge Tipe & Nama Habit */}
+            {/* Bagian Atas: Badge Tipe, Kontrol Edit/Delete & Nama Habit */}
             <div>
-                <div className="flex justify-between items-start mb-4">
+                <div className="flex justify-between items-center mb-3">
                     <span className={`px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider rounded-full border ${isBuild
-                            ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
-                            : 'text-rose-400 bg-rose-500/10 border-rose-500/20'
+                        ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+                        : 'text-rose-400 bg-rose-500/10 border-rose-500/20'
                         }`}>
                         {habit.type}
                     </span>
-                    <span className="text-xs text-zinc-500 font-medium">
-                        Dibuat: {new Date(habit.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
-                    </span>
+
+                    {/* Tombol Aksi Kontrol (Edit & Delete) */}
+                    <div className="flex items-center gap-1">
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onEditClick?.(habit);
+                            }}
+                            className="p-1.5 text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800 active:scale-90 rounded-lg transition duration-150"
+                            title="Ubah nama habit"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.83 20.013a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                            </svg>
+                        </button>
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onDeleteClick?.(habit);
+                            }}
+                            className="p-1.5 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 active:scale-90 rounded-lg transition duration-150"
+                            title="Hapus habit"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <h3 className="text-xl font-bold text-zinc-100 group-hover:text-zinc-50 transition tracking-tight line-clamp-2">
                     {habit.name}
                 </h3>
+
+                <span className="text-xs text-zinc-500 font-medium mt-1 block">
+                    Dibuat: {new Date(habit.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                </span>
             </div>
 
             {/* Bagian Tengah: Informasi Streak & Statistik Utama */}
@@ -108,8 +144,8 @@ export const HabitCard: React.FC<HabitCardProps> = ({ habit, onActionClick }) =>
                 <button
                     onClick={() => onActionClick?.(habit)}
                     className={`w-full py-2.5 px-4 font-semibold text-sm rounded-xl transition duration-200 active:scale-[0.98] ${isBuild
-                            ? 'bg-emerald-600 hover:bg-emerald-500 text-zinc-50 hover:shadow-lg hover:shadow-emerald-950/20'
-                            : 'bg-zinc-800 hover:bg-zinc-700/80 text-rose-400 border border-zinc-700/50 hover:border-rose-500/30'
+                        ? 'bg-emerald-600 hover:bg-emerald-500 text-zinc-50 hover:shadow-lg hover:shadow-emerald-950/20'
+                        : 'bg-zinc-800 hover:bg-zinc-700/80 text-rose-400 border border-zinc-700/50 hover:border-rose-500/30'
                         }`}
                 >
                     {isBuild ? 'Tandai Selesai Hari Ini' : 'Saya Relapse Hari Ini'}
